@@ -4,47 +4,44 @@ from numpy import random
 from typing import List
 import pandas as pd
 
-class CreditContract :
-    def __init__(self, id, exposure, pd) :
-        self.id = id
-        self.exposure = exposure
-        self.pd = pd
-        
-    def __repr__(self):
-        return(str((self.id, self.exposure, self.pd)))
+class RandomCreditContractGen:
+    def __init__(self, seed):
+        self.rng = np.random.RandomState(seed)
 
-class RandomCreditContract(CreditContract) : 
-    # def __init__(self):
-    #     self.id = 
-    pass
+    def random_contract(self, *args):
+        _id =  self.rng.randint(1, 100000)
+        _pd = self.rng.uniform(high = 0.1)
+        _exposure = self.rng.lognormal(8, 2)
+        _sector = self.rng.randint(1,4)
+        return {'id' : _id, 'pd' : _pd, 'exposure' : _exposure, 'sector' : _sector}
+
+
+class CreditContract:
+    def __init__(self, *args, **kwargs) :
+        self.dict = kwargs
         
-class CreditPortfolioBuilder :
-    def __init__(self):
-        self.portfolio = None
-    
-    def portfolio_builder(self):
-        portfolio = CreditPortfolio()
-    
-    def portfolio_item(self) :
-        return(CreditPortfolioBuilder())
-    
-    pass
-        
-class CreditPortfolio : 
-    def __init__(self) :
-        self.portfolio = [] # pd.DataFrame
-    
     def __repr__(self):
-        return(str(list(map(str, self.portfolio))))
-        
-    def add_contract_list(self, contract : List[CreditContract]):
-        self.portfolio.extend(contract)
+        return(str(self.dict))
+
+class CreditPortfolioGen:
+    def __init__(self, seed, size):
+        self.portfolio = self.generate_df(seed, size)
+    def print(self):
+        print(self.portfolio)
     
-    
-     
-    
-class ExposuresSimulation :
-    def __init__(self, size, alpha) :
-        self.Exposures = np.random.pareto(alpha, size)
-        
-    
+    @staticmethod
+    def generate_df(seed, size):
+        RandomCreditGen = RandomCreditContractGen(seed = seed)
+        list_of_contracts = map(RandomCreditGen.random_contract, range(size))
+        return(pd.DataFrame(list_of_contracts).groupby(['id', 'sector']) \
+                             .aggregate({'exposure' : np.sum, 'pd' : np.max}))
+
+
+class CreditPortfolio:
+    def __init__(self, df : pd.DataFrame):
+        self.portfolio = df
+
+    def aggregate(self, _by):
+        return(self.portfolio.groupby(_by , as_index=False) \
+        .aggregate({'exposure' : np.sum, 'pd' : np.max}) \
+        .sort_values(by = _by))
