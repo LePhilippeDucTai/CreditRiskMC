@@ -31,7 +31,6 @@ class CreditPortfolioGen:
         return str(self.portfolio)
     
     @staticmethod
-    @timing.time_it
     def generate_df(seed, size):
         RandomCreditGen = RandomCreditContractGen(seed = seed)
         list_of_contracts = map(RandomCreditGen.random_contract, range(size))

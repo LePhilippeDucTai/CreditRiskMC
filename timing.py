@@ -1,19 +1,19 @@
 import timeit
 import time
-
+import attotime
 def timing_it(f, n_reps) :
     s = timeit.timeit(f, number = n_reps)
     print(f'Execution for {n_reps} repetitions : {s * 1E3 : .3f}ms  which is {s : .3f}s.')
 
 def time_it(func) :
     def wrapper(*args, **kwargs):
-        print(f'### Entering in {func.__name__} ###')
+        print(f'\n### Entering in {func.__name__}. ###')
         t1 = time.perf_counter()
         s = func(*args, **kwargs)
         t2 = time.perf_counter()
         elapsed = t2 - t1
-        print(f'### End of function {func.__name__} ###')
-        print(f'### Elapsed time : {elapsed * 1E3 : .10f} ms ###')
+        print(f'### Quitting function {func.__name__}. ###')
+        print(f'### Elapsed time : {elapsed : .10f} seconds. ### \n')
         return(s)
     return(wrapper)
 
