@@ -1,6 +1,5 @@
 import timeit
 import time
-import memory_profiler
 
 def timing_it(f, n_reps) :
     s = timeit.timeit(f, number = n_reps)

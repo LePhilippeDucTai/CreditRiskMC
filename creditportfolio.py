@@ -1,8 +1,7 @@
 import numpy as np
-from numpy import matlib
-from numpy import random
 from typing import List
 import pandas as pd
+import timing
 
 class RandomCreditContractGen:
     def __init__(self, seed):
@@ -24,12 +23,15 @@ class CreditContract:
         return(str(self.dict))
 
 class CreditPortfolioGen:
+
     def __init__(self, seed, size):
         self.portfolio = self.generate_df(seed, size)
-    def print(self):
-        print(self.portfolio)
+
+    def __repr__(self):
+        return str(self.portfolio)
     
     @staticmethod
+    @timing.time_it
     def generate_df(seed, size):
         RandomCreditGen = RandomCreditContractGen(seed = seed)
         list_of_contracts = map(RandomCreditGen.random_contract, range(size))
@@ -40,8 +42,4 @@ class CreditPortfolioGen:
 class CreditPortfolio:
     def __init__(self, df : pd.DataFrame):
         self.portfolio = df
-
-    def aggregate(self, _by):
-        return(self.portfolio.groupby(_by , as_index=False) \
-        .aggregate({'exposure' : np.sum, 'pd' : np.max}) \
-        .sort_values(by = _by))
+    
