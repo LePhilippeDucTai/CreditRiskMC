@@ -14,8 +14,8 @@ if __name__ == "__main__":
     X = gc.Gaussian_Vector_Simulation(dim, Sig)
     X.Simulate()
 
-    n = 15
+    n = 20
     seed = 10293
     CreditPort = cp.CreditPortfolioGen(seed = seed, size = n)
-    CreditPort.print()
-    # show(df)
+    print(CreditPort)
+

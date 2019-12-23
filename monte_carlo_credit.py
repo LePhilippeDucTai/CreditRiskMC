@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 #              - Student
 #              - Clayton
 
-
 class RiskFactor(ABC):
     def __init__(self, seed):
         self.seed = seed
