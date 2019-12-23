@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import random
 import timing
 class UniformCorrMatrix :
     def __init__(self, rho, dim) :
