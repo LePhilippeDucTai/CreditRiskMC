@@ -16,23 +16,22 @@ class VasicekModel :
         self.params = {}
         for key, value in kwargs.items():
            self.params[key] = value
-        self.rng = np.random.RandomState(seed)
         self.data = data
         self.n_exposures = len(data)
-        self.X = None
         
-    def generate_systemic(self):
-        self.X = self.rng.standard_normal(self.n_exposures)
+    def generate_systemic(self, gen):
+        return gen.standard_normal(self.n_exposures)
 
-    def generate_latent(self):
-        self.generate_systemic()
-        eps = self.rng.standard_normal(self.n_exposures)
-        Z = np.sqrt(self.params['rho']) * self.X + np.sqrt(1. - self.params['rho']) * eps
+    def generate_latent(self, seed):
+        gen = np.random.RandomState(seed)
+        X = self.generate_systemic(gen)
+        eps = gen.standard_normal(self.n_exposures)
+        Z = np.sqrt(self.params['rho']) * X + np.sqrt(1. - self.params['rho']) * eps
         return Z
 
-    def compute(self, *args):
-        Z = self.generate_latent()
-        return sum(self.data['exposure'] * (Z < scipy.stats.norm.ppf(self.data['pd'])))
+    def compute(self, seed):
+        Z = self.generate_latent(seed)
+        return np.sum(self.data['exposure'] * (Z < scipy.stats.norm.ppf(self.data['pd'])))
 
 class MonteCarloEngine:
     def __init__(self, model, **kwargs):
@@ -41,15 +40,16 @@ class MonteCarloEngine:
             self.params[key] = value
         # self.params[n_scenarios]
         self.model = model
+        self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
+        rng = np.random.RandomState(198401)
+        self.seeds = rng.choice(999999, self.params['n_scenarios'], replace = False)
 
     @timing.time_it
     def simulate(self):
-        results = map(self.model.compute, range(self.params['n_scenarios']))
-        return(list(results))
+        results = list(map(self.model.compute, self.seeds))
+        return(results)
     
     @timing.time_it
     def simulate_parallel(self):
-        n_pools = multiprocessing.cpu_count()
-        pool = multiprocessing.Pool(n_pools)
-        results = pool.map(self.model.compute, range(self.params['n_scenarios']))
-        return(list(results))
+        results = self.pool.map(self.model.compute, self.seeds) #already a list
+        return(results)
