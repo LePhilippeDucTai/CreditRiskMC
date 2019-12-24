@@ -2,6 +2,7 @@ import numpy as np
 from typing import List
 import pandas as pd
 import timing
+import multiprocessing
 
 class RandomCreditContractGen:
     def __init__(self, seed):
@@ -26,14 +27,17 @@ class CreditPortfolioGen:
 
     def __init__(self, seed, size):
         self.portfolio = self.generate_df(seed, size)
-
+ 
     def __repr__(self):
         return str(self.portfolio)
     
     @staticmethod
+    @timing.time_it
     def generate_df(seed, size):
         RandomCreditGen = RandomCreditContractGen(seed = seed)
-        list_of_contracts = map(RandomCreditGen.random_contract, range(size))
+        n_pools = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(n_pools)
+        list_of_contracts = pool.map(RandomCreditGen.random_contract, range(size))
         return(pd.DataFrame(list_of_contracts).groupby(['id', 'sector']) \
                              .aggregate({'exposure' : np.sum, 'pd' : np.max}))
 
