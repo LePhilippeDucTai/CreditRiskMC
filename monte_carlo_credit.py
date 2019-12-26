@@ -38,7 +38,6 @@ class MonteCarloEngine:
         self.params = {}
         for key, value in kwargs.items():
             self.params[key] = value
-        # self.params[n_scenarios]
         self.model = model
         self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
         rng = np.random.RandomState(198401)
