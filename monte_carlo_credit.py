@@ -20,7 +20,7 @@ class VasicekModel :
         self.n_exposures = len(data)
         
     def generate_systemic(self, gen):
-        return gen.standard_normal(self.n_exposures)
+        return gen.standard_normal()
 
     def generate_latent(self, seed):
         gen = np.random.RandomState(seed)
@@ -28,10 +28,10 @@ class VasicekModel :
         eps = gen.standard_normal(self.n_exposures)
         Z = np.sqrt(self.params['rho']) * X + np.sqrt(1. - self.params['rho']) * eps
         return Z
-
+        
     def compute(self, seed):
-        Z = self.generate_latent(seed)
-        return np.sum(self.data['exposure'] * (Z < scipy.stats.norm.ppf(self.data['pd'])))
+        Indic = (self.generate_latent(seed) < scipy.stats.norm.ppf(self.data['pd']))
+        return np.dot(self.data['exposure'], Indic)
 
 class MonteCarloEngine:
     def __init__(self, model, **kwargs):
@@ -40,15 +40,16 @@ class MonteCarloEngine:
             self.params[key] = value
         self.model = model
         self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        rng = np.random.RandomState(198401)
-        self.seeds = rng.choice(999999, self.params['n_scenarios'], replace = False)
+        self.rng = np.random.RandomState(198401)
 
     @timing.time_it
     def simulate(self):
-        results = list(map(self.model.compute, self.seeds))
+        seeds = self.rng.choice(self.params['n_scenarios'] * 10, self.params['n_scenarios'], replace = False)
+        results = list(map(self.model.compute, seeds))
         return(results)
     
     @timing.time_it
     def simulate_parallel(self):
-        results = self.pool.map(self.model.compute, self.seeds) #already a list
+        seeds = self.rng.choice(self.params['n_scenarios'] * 10, self.params['n_scenarios'], replace = False)
+        results = self.pool.map(self.model.compute, seeds) #already a list
         return(results)
