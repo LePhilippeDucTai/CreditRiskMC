@@ -8,7 +8,7 @@ from pandasgui import show
 
 if __name__ == "__main__":
     n = 1000
-    n_scenarios = 1000
+    n_scenarios = 20000
 
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n)
     # print(CreditPort)
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     MC = mccr.MonteCarloEngine(model = Vasicek, n_scenarios = n_scenarios)
     MCparallel = mccr.MonteCarloEngine(model = Vasicek, n_scenarios = n_scenarios)
 
-    x = MC.simulate(n_scenarios, 19841)
+    x = MC.simulate(seed = 19841)
     xx = MCparallel.simulate_parallel()
 
     print(len(x), len(xx))
