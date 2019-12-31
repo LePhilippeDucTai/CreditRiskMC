@@ -44,9 +44,9 @@ class MonteCarloEngine:
         self.N_sim = self.params['n_scenarios'] 
 
     @timing.time_it
-    def simulate(self, n_sim, seed):
+    def simulate(self, seed):
         gen = np.random.RandomState(seed)
-        results = list(map(ft.partial(self.model.compute, gen), range(n_sim)))
+        results = list(map(ft.partial(self.model.compute, gen), range(self.N_sim)))
         return(results)
 
     def simulate_helper(self, n_sim, seed):
@@ -56,12 +56,14 @@ class MonteCarloEngine:
     
     @timing.time_it
     def simulate_parallel(self):
-        n_pools = multiprocessing.cpu_count()
+        # n_pools = multiprocessing.cpu_count()
+        n_pools = 4
         pool = multiprocessing.Pool(n_pools)
         seeds = [11950, 1093012, 1029201, 92910, 19310, 88493, 2019506, 33301][:n_pools]
-        n_sim_pool = math.ceil(self.N_sim / 4)
+        n_sim_pool = math.ceil(self.N_sim / n_pools)
         func = ft.partial(self.simulate_helper, n_sim_pool)
 
-        res = pool.map(func, seeds)
-        flatten = list(itertools.chain.from_iterable(res))
+        res = pool.map(func, seeds) # 4 cores that run less (/4) simulations in parallel
+
+        flatten = list(itertools.chain.from_iterable(res))[:self.N_sim]
         return flatten
