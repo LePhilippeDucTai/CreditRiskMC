@@ -4,6 +4,9 @@ import scipy
 from scipy.stats import norm
 import timing
 import multiprocessing
+import functools as ft
+import math
+import itertools
 
 # Model : abstract class
 # Subclasses : - Vasicek Model ? (Copula ?)
@@ -22,15 +25,14 @@ class VasicekModel :
     def generate_systemic(self, gen):
         return gen.standard_normal()
 
-    def generate_latent(self, seed):
-        gen = np.random.RandomState(seed)
+    def generate_latent(self, gen):
         X = self.generate_systemic(gen)
         eps = gen.standard_normal(self.n_exposures)
         Z = np.sqrt(self.params['rho']) * X + np.sqrt(1. - self.params['rho']) * eps
         return Z
         
-    def compute(self, seed):
-        Indic = (self.generate_latent(seed) < scipy.stats.norm.ppf(self.data['pd']))
+    def compute(self, gen, *args):
+        Indic = (self.generate_latent(gen) < scipy.stats.norm.ppf(self.data['pd']))
         return np.dot(self.data['exposure'], Indic)
 
 class MonteCarloEngine:
@@ -39,17 +41,27 @@ class MonteCarloEngine:
         for key, value in kwargs.items():
             self.params[key] = value
         self.model = model
-        self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        self.rng = np.random.RandomState(198401)
+        self.N_sim = self.params['n_scenarios'] 
 
     @timing.time_it
-    def simulate(self):
-        seeds = self.rng.choice(self.params['n_scenarios'] * 10, self.params['n_scenarios'], replace = False)
-        results = list(map(self.model.compute, seeds))
+    def simulate(self, n_sim, seed):
+        gen = np.random.RandomState(seed)
+        results = list(map(ft.partial(self.model.compute, gen), range(n_sim)))
+        return(results)
+
+    def simulate_helper(self, n_sim, seed):
+        gen = np.random.RandomState(seed)
+        results = list(map(ft.partial(self.model.compute, gen), range(n_sim)))
         return(results)
     
     @timing.time_it
     def simulate_parallel(self):
-        seeds = self.rng.choice(self.params['n_scenarios'] * 10, self.params['n_scenarios'], replace = False)
-        results = self.pool.map(self.model.compute, seeds) #already a list
-        return(results)
+        n_pools = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(n_pools)
+        seeds = [11950, 1093012, 1029201, 92910, 19310, 88493, 2019506, 33301][:n_pools]
+        n_sim_pool = math.ceil(self.N_sim / 4)
+        func = ft.partial(self.simulate_helper, n_sim_pool)
+
+        res = pool.map(func, seeds)
+        flatten = list(itertools.chain.from_iterable(res))
+        return flatten
