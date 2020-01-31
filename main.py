@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
 
     Portfolio = cp.CreditPortfolio()
-    Portfolio.add_contract_list(List_of_contracts)
+    # Portfolio.add_contract_list(List_of_contracts)
     print(Portfolio)
         
     
