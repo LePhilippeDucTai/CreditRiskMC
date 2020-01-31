@@ -22,4 +22,7 @@ if __name__ == "__main__":
     xx = MCparallel.simulate_parallel()
     # print(len(x), len(xx))
 
+# To do :
+# - The Loss can be computed over time 
+# - Add the fact that exposures can be time series
 
