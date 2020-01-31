@@ -43,7 +43,7 @@ class MonteCarloEngine:
         self.model = model
         self.N_sim = self.params['n_scenarios'] 
 
-    @timing.time_it
+    # @timing.time_it
     def simulate(self, seed):
         gen = np.random.RandomState(seed)
         results = list(map(ft.partial(self.model.compute, gen), range(self.N_sim)))
@@ -54,7 +54,7 @@ class MonteCarloEngine:
         results = list(map(ft.partial(self.model.compute, gen), range(n_sim)))
         return(results)
     
-    @timing.time_it
+    # @timing.time_it
     def simulate_parallel(self):
         # n_pools = multiprocessing.cpu_count()
         n_pools = 4
