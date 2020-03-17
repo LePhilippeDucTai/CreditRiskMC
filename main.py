@@ -8,19 +8,18 @@ import functools
 import os
 
 if __name__ == "__main__":
-    n = 10
-    n_scenarios = 2000
+    n = 100
+    n_scenarios = 4000
 
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n)
     print(CreditPort)
     
-    Vasicek = mccr.VasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5)
-    MC = mccr.MonteCarloEngine(model = Vasicek, n_scenarios = n_scenarios)
-    MCparallel = mccr.MonteCarloEngine(model = Vasicek, n_scenarios = n_scenarios)
+    Vasicek = mccr.SimpleVasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5)
+    MC = mccr.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
+    MCparallel = mccr.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
 
     x = MC.simulate(seed = 19841)
     xx = MCparallel.simulate_parallel()
-    # print(len(x), len(xx))
 
 # To do :
 # - The Loss can be computed over time 

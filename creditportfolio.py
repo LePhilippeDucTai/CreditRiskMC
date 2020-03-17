@@ -49,7 +49,7 @@ class CreditPortfolioGen:
     @timing.time_it
     def generate_df(self, seed, size):
         RandomCreditGen = RandomCreditContractGen(seed = seed)
-        list_of_contracts = map(RandomCreditGen.random_contract, range(size))
+        list_of_contracts = list(map(RandomCreditGen.random_contract, range(size)))
         return(pd.DataFrame(list_of_contracts).groupby(['id', 'sector']) \
                              .aggregate({'exposure' : np.sum, 'pd' : np.max}))
 
