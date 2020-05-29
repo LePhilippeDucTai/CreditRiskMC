@@ -8,8 +8,8 @@ import functools
 import os
 
 if __name__ == "__main__":
-    n = 100
-    n_scenarios = 5000
+    n = 1000
+    n_scenarios = 100000
     date = '2020-05-29'
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n, YYMMDD = date)
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     MC = mccr.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
 
     x = MC.compute()
-    xx = MC.compute_slow()
+    # xx = MC.compute_slow()
     print(np.mean(x))
 
 # To do :
