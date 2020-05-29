@@ -12,8 +12,8 @@ class PoissonCompModel:
         self.rng_poiss = np.random.RandomState()
 
     def simulate(self, id_mc):
-        self.rng_log_norm.seed(hs.HashSeed.hash_function("log_normal", id, id_mc))
-        self.rng_poiss.seed(hs.HashSeed.hash_function("poisson", id, id_mc))
+        self.rng_log_norm.seed(hs.HashSeed.hash_function("log_normal", self.id, id_mc))
+        self.rng_poiss.seed(hs.HashSeed.hash_function("poisson", self.id, id_mc))
 
         N = self.rng_poiss.poisson(lam = self.params['lambda_poiss'])
         return np.sum(self.rng_log_norm.lognormal(self.params['mean_ln'], self.params['sigma_ln'], N))

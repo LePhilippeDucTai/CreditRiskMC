@@ -9,22 +9,16 @@ import os
 
 if __name__ == "__main__":
     n = 100
-    n_scenarios = 400
+    n_scenarios = 5000
     date = '2020-05-29'
-    # CreditContract = cp.RandomCreditContractGen(seed= 19414, YYMMDD = date)
-    # rdContract = CreditContract.random_contract_ts()
-    # print(rdContract) 
-
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n, YYMMDD = date)
-    # print(CreditPort)
-    
-    Vasicek = mccr.SimpleVasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5)
-    MC = mccr.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
-    MCparallel = mccr.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
 
-    x = MC.simulate(seed = 19841)
-    xx = MCparallel.simulate_parallel()
-    print(x == xx)
+    Vasicek = mccr.SimpleVasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5, id = "id94109")
+    MC = mccr.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
+
+    x = MC.compute()
+    xx = MC.compute_slow()
+    print(np.mean(x))
 
 # To do :
 # - The Loss can be computed over time 
