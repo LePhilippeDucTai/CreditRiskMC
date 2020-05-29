@@ -35,11 +35,11 @@ class SimpleVasicekModel :
         return Z
         
     def compute(self, id_mc):
-        self.gen_latent.seed(hs.HashSeed.hash_function("latent", self.params['id'], id_mc))
-        self.gen_idiosyncratic.seed(hs.HashSeed.hash_function("idiosyncratic", self.params['id'], id_mc))
+        self.gen_latent.seed(hs.hash_function("latent", self.params['id'], id_mc))
+        self.gen_idiosyncratic.seed(hs.hash_function("idiosyncratic", self.params['id'], id_mc))
     
-        Indic = (self.generate_latent() < scipy.stats.norm.ppf(self.data['pd']))
-        return np.dot(self.data['exposure'], Indic)
+        indic = (self.generate_latent() < scipy.stats.norm.ppf(self.data['pd']))
+        return np.dot(self.data['exposure'], indic)
 
 class MonteCarloEngine:
     def __init__(self, n_simulations, model):
