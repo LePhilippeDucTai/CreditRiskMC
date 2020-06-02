@@ -2,9 +2,9 @@ import multiprocessing
 import timing
 
 class MonteCarloEngine:
-    def __init__(self, n_simulations, model):
+    def __init__(self, pools_max, n_simulations, model):
         self.n_simulations = n_simulations
-        self.npools = multiprocessing.cpu_count()
+        self.npools = min(pools_max, multiprocessing.cpu_count())
         self.pool = multiprocessing.Pool(self.npools)
         self.model = model
 

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n, YYMMDD = date)
 
     Vasicek = mccr.SimpleVasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5, id = "9109410")
-    MC = mce.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
+    MC = mce.MonteCarloEngine(pools_max = 2,model = Vasicek, n_simulations = n_scenarios)
 
     x = MC.compute()
     print(f'Moyenne : {np.mean(x):.2f}')
