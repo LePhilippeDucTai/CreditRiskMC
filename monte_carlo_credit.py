@@ -1,12 +1,8 @@
 import numpy as np
-from abc import ABC, abstractmethod
 import scipy
 from scipy.stats import norm
-import timing
-import multiprocessing
 import functools as ft
 import math
-import itertools
 import hashseed as hs
 
 # Model : abstract class
@@ -34,25 +30,12 @@ class SimpleVasicekModel :
         Z = np.sqrt(self.params['rho']) * X + np.sqrt(1. - self.params['rho']) * eps
         return Z
         
-    def compute(self, id_mc):
+    def simulate(self, id_mc):
         self.gen_latent.seed(hs.hash_function("latent", self.params['id'], id_mc))
         self.gen_idiosyncratic.seed(hs.hash_function("idiosyncratic", self.params['id'], id_mc))
     
         indic = (self.generate_latent() < scipy.stats.norm.ppf(self.data['pd']))
         return np.dot(self.data['exposure'], indic)
 
-class MonteCarloEngine:
-    def __init__(self, n_simulations, model):
-        self.n_simulations = n_simulations
-        self.pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        self.model = model
 
-    @timing.time_it
-    def compute(self):
-        result = self.pool.map(self.model.compute, range(self.n_simulations))
-        return result
 
-    @timing.time_it
-    def compute_slow(self):
-        result = [self.model.compute(i) for i in range(self.n_simulations)]
-        return result
