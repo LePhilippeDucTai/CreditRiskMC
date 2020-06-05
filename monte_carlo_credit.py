@@ -46,6 +46,4 @@ class SystemicFactorModel:
     def simulate(self, id_mc):
         self.gen_latent.seed(hs.hash_function("systemic", self.params['id'], id_mc))
         size = len(self.params['alpha'])
-        res = np.dot(self.params['alpha'], self.gen_latent.standard_normal(size))
-        print(res)
-        return res
+        return np.dot(self.params['alpha'], self.gen_latent.standard_normal(size))
