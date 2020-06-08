@@ -32,7 +32,6 @@ class SimpleVasicekModel:
         
     def simulate(self, id_mc):
         self.gen_idiosyncratic.seed(hs.hash_function("idiosyncratic", self.params['id'], id_mc))
-    
         indic = (self.generate_latent(id_mc) < scipy.stats.norm.ppf(self.data['pd']))
         return np.dot(self.data['exposure'], indic)
 

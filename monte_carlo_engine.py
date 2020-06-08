@@ -1,8 +1,6 @@
 import multiprocessing
 import timing
 import tqdm
-import pyspark
-
 class MonteCarloEngine:
     def __init__(self, n_simulations, model):
         self.n_simulations = n_simulations
@@ -14,8 +12,8 @@ class MonteCarloEngine:
     def compute(self, multiprocess = False):
         if multiprocess :
             print(f"Monte-Carlo computing with {self.npools} processors.")
-            x = list(tqdm.tqdm(self.pool.imap_unordered(self.model.simulate, range(self.n_simulations)), total = self.n_simulations, ncols = 100))
+            x = self.pool.imap_unordered(self.model.simulate, range(self.n_simulations), chunksize = 1000)
         else :
             print(f"Monte-Carlo computing with 1 processor.")
-            x = list(tqdm.tqdm(map(self.model.simulate, range(self.n_simulations)), total = self.n_simulations, ncols = 100))
-        return x
+            x = map(self.model.simulate, range(self.n_simulations))
+        return list(tqdm.tqdm(x, total = self.n_simulations, ncols = 50))
