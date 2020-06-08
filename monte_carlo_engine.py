@@ -16,4 +16,4 @@ class MonteCarloEngine:
         else :
             print(f"Monte-Carlo computing with 1 processor.")
             x = map(self.model.simulate, range(self.n_simulations))
-        return list(tqdm.tqdm(x, total = self.n_simulations, ncols = 50))
+        return list(tqdm.tqdm(x, total = self.n_simulations, ncols = 75))

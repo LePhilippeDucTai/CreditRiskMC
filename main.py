@@ -9,8 +9,8 @@ import os
 import hashseed as hs
 
 if __name__ == "__main__":
-    n = 3000
-    n_scenarios = 20000
+    n = 1000
+    n_scenarios = 4000
     date = '2020-05-29'
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n, YYMMDD = date)
 
