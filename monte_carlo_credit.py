@@ -35,13 +35,28 @@ class SimpleVasicekModel:
         indic = (self.generate_latent(id_mc) < scipy.stats.norm.ppf(self.data['pd']))
         return np.dot(self.data['exposure'], indic)
 
+class StudentVasicekModel(SimpleVasicekModel):
+    # To use it, add a parameter 'df' after the 'data' argument.
+    # eg : SC = StudentVasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5, df = 10, id = "9109410")
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
+        self.gen_student = np.random.RandomState()
+
+    def generate_latent(self, id_mc):
+        self.gen_student.seed(hs.hash_function("chisquare", self.params['id'], id_mc))
+        X = self.generate_systemic(id_mc)
+        W = self.gen_student.chisquare(self.params['df'])
+        eps = self.gen_idiosyncratic.standard_normal(self.n_exposures)
+        Z = (np.sqrt(self.params['rho']) * X + np.sqrt(1. - self.params['rho']) * eps) * np.sqrt(self.params['df'] / W)
+        return Z
+
 class SystemicFactorModel:
     def __init__(self, **kwargs):
         self.params = {}
         for key, value in kwargs.items():
            self.params[key] = value
-        self.gen_latent = np.random.RandomState()
-        
+        self.gen_latent = np.random.RandomState()    
+
     def simulate(self, id_mc):
         self.gen_latent.seed(hs.hash_function("systemic", self.params['id'], id_mc))
         size = len(self.params['alpha'])

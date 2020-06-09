@@ -21,7 +21,7 @@ class PoissonCompModel:
 if __name__ == "__main__":
     n_simulations = 100000
     parametres = {'mean_ln' : 1, 'sigma_ln' : 0.5, 'lambda_poiss' : 20}
-    poissModel = PoissonCompModel("ABCDE10931S", parametres)
+    poissModel = PoissonCompModel("ABCDE10009", parametres)
     MCEngine = mce.MonteCarloEngine(n_simulations, poissModel)
     
     result = MCEngine.compute(multiprocess = True)

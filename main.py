@@ -10,19 +10,20 @@ import hashseed as hs
 
 if __name__ == "__main__":
     n = 1000
-    n_scenarios = 4000
+    n_scenarios = 400
     date = '2020-05-29'
     CreditPort = cp.CreditPortfolioGen(seed = 10293, size = n, YYMMDD = date)
 
-    Vasicek = mccr.SimpleVasicekModel(seed = 121414, data = CreditPort.portfolio, rho = 0.5, id = "9109410")
-    MC = mce.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
+    Vasicek = mccr.SimpleVasicekModel(data = CreditPort.portfolio, rho = 0.5, id = "9109410")
+    StudentCopula = mccr.StudentVasicekModel(data = CreditPort.portfolio, rho = 0.5, df = 10, id = "9109410")
 
-    x = MC.compute(multiprocess = False)
-    print(f'Moyenne : {np.mean(x):.2f}')
-    
+    MC = mce.MonteCarloEngine(model = Vasicek, n_simulations = n_scenarios)
     y = MC.compute(multiprocess = True)
     print(f'Moyenne : {np.mean(y):.2f}')
-
+    
+    MC = mce.MonteCarloEngine(model = StudentCopula, n_simulations = n_scenarios)
+    y = MC.compute(multiprocess = True)
+    print(f'Moyenne : {np.mean(y):.2f}')
 
 # To do :
 # - The Loss can be computed over time 
