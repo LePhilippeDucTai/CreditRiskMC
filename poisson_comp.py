@@ -1,8 +1,5 @@
 import numpy as np
-import functools as ft
 import hashseed as hs
-import multiprocessing
-import timing
 import monte_carlo_engine as mce
 
 

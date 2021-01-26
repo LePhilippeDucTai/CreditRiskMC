@@ -1,9 +1,7 @@
 import numpy as np
-from typing import List
 import pandas as pd
 import timing
 import multiprocessing
-import functools
 
 
 class RandomCreditContractGen:
@@ -34,7 +32,7 @@ class RandomCreditContractGen:
 
 class CreditContract:
     def __init__(self, **kwargs):
-        self.attribute= dict()
+        self.attribute = dict()
         for key, value in kwargs.items():
             self.attribute[key] = value
 

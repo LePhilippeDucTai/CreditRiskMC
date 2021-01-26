@@ -18,6 +18,6 @@ class MonteCarloEngine:
                 self.model.simulate, range(self.n_simulations), chunksize=1000
             )
         else:
-            print(f"Monte-Carlo computing with 1 processor.")
+            print("Monte-Carlo computing with 1 processor.")
             x = map(self.model.simulate, range(self.n_simulations))
         return list(tqdm.tqdm(x, total=self.n_simulations, ncols=75))

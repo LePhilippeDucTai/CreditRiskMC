@@ -1,8 +1,6 @@
 import numpy as np
 import scipy
 from scipy.stats import norm
-import functools as ft
-import math
 import hashseed as hs
 
 # Model : abstract class
